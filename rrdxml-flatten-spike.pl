@@ -17,7 +17,9 @@ while(<$fh>) {
 	} elsif ( m{<v>\d\.\d+e[+-](\d+)</v>} ) {
 		my $e = $1;
 		$stat->{expon}->{$cf}->{$e}++;
+		# FIXME this should be calculated, but then this script can't be pipe
 		if ( $e > 7 ) {
+			warn "# FLATTEN [$_]\n";
 			s{<v>.*</v>}{<v>NaN</v>};
 		}
 	}

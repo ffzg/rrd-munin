@@ -2,11 +2,15 @@
 use warnings;
 use strict;
 use autodie;
+use English;
+
+die "you need to run this script as root\n" unless $UID == 0;
 
 my ( $patt, $max ) = @ARGV;
 #die "usage: $0 rrd-file-pattern max-value" unless $patt && $max;
 
-$patt = 'snmp;sw-b100:if_bytes.(send|recv)';
+#$patt = 'snmp;sw-lib.*:if_bytes.(send|recv)';
+$patt = 'snmp;' . $patt .':if_bytes.(send|recv)';
 $max = 2_000_000_000; # 10Gbit/s
 
 warn "# $patt max:$max\n";

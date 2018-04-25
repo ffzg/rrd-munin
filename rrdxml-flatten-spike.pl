@@ -21,9 +21,11 @@ while(<$fh>) {
 		if ( $e > 7 ) {
 			warn "# FLATTEN [$_]\n";
 			s{<v>.*</v>}{<v>NaN</v>};
+		} elsif ( $e == 7 && m/<v>[2-9]\./ ) {
+			warn "# SPIKE   [$_]\n";
 		}
 	}
 	print "$_\n";
 }
 
-#warn dump( $stat );
+warn "# stat = ",dump( $stat );

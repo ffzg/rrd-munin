@@ -23,6 +23,7 @@ while(<$fh>) {
 			s{<v>.*</v>}{<v>NaN</v>};
 		} elsif ( $e == 7 && m/<v>[2-9]\./ ) {
 			warn "# SPIKE   [$_]\n";
+			s{<v>.*</v>}{<v>NaN</v>};
 		}
 	}
 	print "$_\n";

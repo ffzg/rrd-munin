@@ -4,7 +4,7 @@ use strict;
 use autodie;
 
 use Data::Dump qw(dump);
-my $debug = $ENV{DEBUG};
+my $debug = $ENV{DEBUG} || 0;
 
 my $url = "http://10.60.0.92:8086/write?db=munin_archive";
 
@@ -25,6 +25,11 @@ foreach my $file ( @files ) {
 	$id =~ s{/var/lib/munin/}{} || die "can't strip path from: $id";
 	my ($group,$host,$plugin,$name,undef) = split(/[\/-]/,$id);
 	my @a = split(/[\/-]/,$id);
+	my $group = shift @a; # first
+	pop @a; # drop last
+	my $name = pop @a;
+	my $plugin = pop @a;
+	my $host = join('-', @a);
 	warn "# file = $file ", dump(\@a) if $debug;
 
 	my $cf = '_UNKNOWN';
@@ -38,13 +43,13 @@ foreach my $file ( @files ) {
 			$t_off++; # multiple values for same time offset (kind of)
 		} elsif ( m{/ (\d+) --> <row><v>(.+)</v></row>} ) {
 			if ( $2 + 0 != $2 ) {
-				warn "SKIP: $_" if $debug;
+				warn "SKIP: $_" if $debug > 1;
 				next;
 			}
 			my ( $t, $v ) = ( $1, $2 + 0 );
 			print $influx "$plugin,group=$group,host=$host,plugin=$plugin,cf=$cf,name=$name $cf=$v ", $t * 1000000000 + $t_off, "\n";
 		} else {
-			warn "## $_" if $debug;
+			warn "## $_" if $debug > 2;
 		}
 	}
 	close ($influx);
